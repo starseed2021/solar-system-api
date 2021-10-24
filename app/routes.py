@@ -54,8 +54,21 @@ def handle_planets():
         return make_response(new_planet_response, 201)
 
     elif request.method == "GET":
-
-        planets = Planet.query.all()
+        name_query = request.args.get("name")
+        description_query = request.args.get("description")
+        distance_from_sun_query = request.args.get("distance_from_sun_in_km")
+        moon_count_query = request.args.get("moon_count")
+        
+        if name_query:
+            planets = Planet.query.filter_by(name=name_query)
+        elif description_query:
+            planets = Planet.query.filter_by(description=description_query)
+        elif distance_from_sun_query:
+            planets = Planet.query.filter_by(distance_from_sun_in_km=distance_from_sun_query)
+        elif moon_count_query:
+            planets = Planet.query.filter_by(moon_count=moon_count_query)
+        else:
+            planets = Planet.query.all()
         planets_response = []
         for planet in planets:
             planets_response.append(
