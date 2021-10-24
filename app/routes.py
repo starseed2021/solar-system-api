@@ -42,7 +42,16 @@ def handle_planets():
         db.session.add(new_planet)
         db.session.commit()
 
-        return make_response(f"Planet {new_planet.name} successfully created", 201)  
+        new_planet_response = {
+            "id": new_planet.id,
+            "name": new_planet.name,
+            "description": new_planet.description,
+            "distance_from_sun_in_km": int(new_planet.distance_from_sun_in_km),
+            "moon_count": new_planet.moon_count
+        }
+
+        # return make_response(f"Planet {new_planet.name} with id: {new_planet.id} successfully created", 201)  
+        return make_response(new_planet_response, 201)
 
     elif request.method == "GET":
 
