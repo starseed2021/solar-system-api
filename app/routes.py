@@ -60,15 +60,16 @@ def handle_planets():
         moon_count_query = request.args.get("moon_count")
         
         if name_query:
-            planets = Planet.query.filter_by(name=name_query)
+            planets = Planet.query.filter(Planet.name.contains(name_query)) #Case Sensitve
         elif description_query:
-            planets = Planet.query.filter_by(description=description_query)
+            planets = Planet.query.filter(Planet.description.contains(description_query))
         elif distance_from_sun_query:
-            planets = Planet.query.filter_by(distance_from_sun_in_km=distance_from_sun_query)
+            planets = Planet.query.filter(Planet.distance_from_sun_in_km.contains(distance_from_sun_query))
         elif moon_count_query:
-            planets = Planet.query.filter_by(moon_count=moon_count_query)
+            planets = Planet.query.filter(Planet.moon_count.contains(moon_count_query))
         else:
             planets = Planet.query.all()
+
         planets_response = []
         for planet in planets:
             planets_response.append(
@@ -122,4 +123,6 @@ def planet_facts(planet_id):
         db.session.commit()
 
         return make_response(f"Book #{planet.id} successfully deleted") 
+
+        
 
