@@ -29,7 +29,10 @@ def handle_planets():
     if request.method == "POST":
 
         request_body = request.get_json()
-        if "name" not in request_body or "description" not in request_body:
+        if "name" not in request_body or "description" not in request_body \
+            or "distance_from_sun_in_km" not in request_body \
+            or "moon_count" not in request_body:
+            
             return make_response("Invalid Request", 400)
 
         new_planet = Planet(
@@ -59,6 +62,7 @@ def handle_planets():
         distance_from_sun_query = request.args.get("distance_from_sun_in_km")
         moon_count_query = request.args.get("moon_count")
         
+
         if name_query:
             planets = Planet.query.filter(Planet.name.contains(name_query)) #Case Sensitve
         elif description_query:
@@ -77,7 +81,7 @@ def handle_planets():
                     "id": planet.id,
                     "name": planet.name,
                     "description": planet.description,
-                    "distance_from_sun_in_km": int(planet.distance_from_sun_in_km), #converted numeric to integer; json/python can't process numeric
+                    "distance_from_sun_in_km": int(planet.distance_from_sun_in_km), #converted numeric to integer
                     "moon_count": planet.moon_count
                 }
             )
@@ -87,6 +91,7 @@ def handle_planets():
 @planets_bp.route("/<planet_id>", methods=["GET", "PUT", "DELETE"])
 def planet_facts(planet_id):
     planet = Planet.query.get(planet_id)
+    # planet = Planet.query.get_or_404(planet_id)
 
     if planet is None:
         return jsonify(planet_id), 404
@@ -104,12 +109,12 @@ def planet_facts(planet_id):
         if planet is None:
             return jsonify(planet_id), 404
 
-        form_data = request.get_json()
-        if "name" not in form_data or "description" not in form_data:
+        request_body = request.get_json()
+        if "name" not in request_body or "description" not in request_body:
             return make_response("Invalid Request", 400)
 
-        planet.name = form_data["name"]
-        planet.description = form_data["description"]
+        planet.name = request_body["name"]
+        planet.description = request_body["description"]
 
         db.session.commit()
 
