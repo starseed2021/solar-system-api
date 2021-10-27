@@ -51,7 +51,7 @@ def handle_planets():
         }
 
         # return make_response(f"Planet {new_planet.name} with id: {new_planet.id} successfully created", 201)  
-        return make_response(new_planet_response, 201)
+        return jsonify(new_planet_response), 201
 
     elif request.method == "GET":
         name_query = request.args.get("name")
@@ -77,8 +77,8 @@ def handle_planets():
                     "id": planet.id,
                     "name": planet.name,
                     "description": planet.description,
-                    "distance from sun in km": int(planet.distance_from_sun_in_km), #converted numeric to integer; json/python can't process numeric
-                    "moon count": planet.moon_count
+                    "distance_from_sun_in_km": int(planet.distance_from_sun_in_km), #converted numeric to integer; json/python can't process numeric
+                    "moon_count": planet.moon_count
                 }
             )
 
@@ -89,20 +89,20 @@ def planet_facts(planet_id):
     planet = Planet.query.get(planet_id)
 
     if planet is None:
-        return make_response(planet_id, "is not found", 404)
+        return jsonify(planet_id), 404
 
     if request.method == "GET":
         return {
                     "id": planet.id,
                     "name": planet.name,
                     "description": planet.description,
-                    "distance from sun in km": int(planet.distance_from_sun_in_km),
-                    "moon count": planet.moon_count
+                    "distance_from_sun_in_km": int(planet.distance_from_sun_in_km),
+                    "moon_count": planet.moon_count
                 }   
 
     elif request.method =="PUT":
         if planet is None:
-            return make_response(f"Planet {planet_id} is not found", 404)
+            return jsonify(planet_id), 404
 
         form_data = request.get_json()
         if "name" not in form_data or "description" not in form_data:
@@ -113,16 +113,16 @@ def planet_facts(planet_id):
 
         db.session.commit()
 
-        return make_response(f"Book #{planet_id} successfully updated")
+        return jsonify(planet_id), 201
 
     elif request.method == "DELETE":   
         if planet is None:
-            return make_response(f"Book {planet_id} is not found", 404)
+            return jsonify(planet_id), 404
 
         db.session.delete(planet)
         db.session.commit()
 
-        return make_response(f"Book #{planet.id} successfully deleted") 
+        return jsonify(planet_id), 200
 
         
 
