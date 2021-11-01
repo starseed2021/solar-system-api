@@ -1,5 +1,5 @@
 # Get all books and return no records
-def test_get_all_books_with_no_records(client):
+def test_get_all_planets_with_no_records(client):
     # Act
     response = client.get("/planets")
     response_body = response.get_json()
@@ -9,7 +9,7 @@ def test_get_all_books_with_no_records(client):
     assert response_body == []
 
 # Get one book by id
-def test_get_book_by_id(client, two_saved_planets):
+def test_get_planet_by_id(client, two_saved_planets):
     # Act
     response = client.get("/planets/1")
     response_body = response.get_json()
@@ -25,7 +25,7 @@ def test_get_book_by_id(client, two_saved_planets):
     }
 
 # Test no data in test database returns 404
-def test_get_book_by_id_with_no_data(client):
+def test_get_planet_by_id_with_no_data(client):
     # Act
     response = client.get("/planet/1")
     response_body = response.get_json()
