@@ -24,22 +24,23 @@ from flask import Blueprint, jsonify, request, make_response
 
 planets_bp = Blueprint("planets_bp", __name__, url_prefix="/planets")
 
+
 @planets_bp.route("", methods=["POST", "GET"])
 def handle_planets():
     if request.method == "POST":
 
         request_body = request.get_json()
         if "name" not in request_body or "description" not in request_body \
-            or "distance_from_sun_in_km" not in request_body \
-            or "moon_count" not in request_body:
-            
+                or "distance_from_sun_in_km" not in request_body \
+                or "moon_count" not in request_body:
+
             return make_response("Invalid Request", 400)
 
         new_planet = Planet(
-            name = request_body["name"],
-            description = request_body["description"],
-            distance_from_sun_in_km = request_body["distance_from_sun_in_km"],
-            moon_count = request_body["moon_count"]
+            name=request_body["name"],
+            description=request_body["description"],
+            distance_from_sun_in_km=request_body["distance_from_sun_in_km"],
+            moon_count=request_body["moon_count"]
         )
 
         db.session.add(new_planet)
@@ -53,7 +54,7 @@ def handle_planets():
             "moon_count": new_planet.moon_count
         }
 
-        # return make_response(f"Planet {new_planet.name} with id: {new_planet.id} successfully created", 201)  
+        # return make_response(f"Planet {new_planet.name} with id: {new_planet.id} successfully created", 201)
         return jsonify(new_planet_response), 201
 
     elif request.method == "GET":
@@ -61,16 +62,19 @@ def handle_planets():
         description_query = request.args.get("description")
         distance_from_sun_query = request.args.get("distance_from_sun_in_km")
         moon_count_query = request.args.get("moon_count")
-        
 
         if name_query:
-            planets = Planet.query.filter(Planet.name.contains(name_query)) #Case Sensitve
+            planets = Planet.query.filter(
+                Planet.name.contains(name_query))  # Case Sensitve
         elif description_query:
-            planets = Planet.query.filter(Planet.description.contains(description_query))
+            planets = Planet.query.filter(
+                Planet.description.contains(description_query))
         elif distance_from_sun_query:
-            planets = Planet.query.filter(Planet.distance_from_sun_in_km.contains(distance_from_sun_query))
+            planets = Planet.query.filter(
+                Planet.distance_from_sun_in_km.contains(distance_from_sun_query))
         elif moon_count_query:
-            planets = Planet.query.filter(Planet.moon_count.contains(moon_count_query))
+            planets = Planet.query.filter(
+                Planet.moon_count.contains(moon_count_query))
         else:
             planets = Planet.query.all()
 
@@ -81,31 +85,32 @@ def handle_planets():
                     "id": planet.id,
                     "name": planet.name,
                     "description": planet.description,
-                    "distance_from_sun_in_km": int(planet.distance_from_sun_in_km), #converted numeric to integer
+                    # converted numeric to integer
+                    "distance_from_sun_in_km": int(planet.distance_from_sun_in_km),
                     "moon_count": planet.moon_count
                 }
             )
 
         return jsonify(planets_response)
 
+
 @planets_bp.route("/<planet_id>", methods=["GET", "PUT", "DELETE"])
 def planet_facts(planet_id):
     planet = Planet.query.get(planet_id)
-    # planet = Planet.query.get_or_404(planet_id)
 
     if planet is None:
         return jsonify(planet_id), 404
 
     if request.method == "GET":
         return {
-                    "id": planet.id,
-                    "name": planet.name,
-                    "description": planet.description,
-                    "distance_from_sun_in_km": int(planet.distance_from_sun_in_km),
-                    "moon_count": planet.moon_count
-                }   
+            "id": planet.id,
+            "name": planet.name,
+            "description": planet.description,
+            "distance_from_sun_in_km": int(planet.distance_from_sun_in_km),
+            "moon_count": planet.moon_count
+        }
 
-    elif request.method =="PUT":
+    elif request.method == "PUT":
         if planet is None:
             return jsonify(planet_id), 404
 
@@ -120,7 +125,7 @@ def planet_facts(planet_id):
 
         return jsonify(planet_id), 201
 
-    elif request.method == "DELETE":   
+    elif request.method == "DELETE":
         if planet is None:
             return jsonify(planet_id), 404
 
@@ -128,6 +133,3 @@ def planet_facts(planet_id):
         db.session.commit()
 
         return jsonify(planet_id), 200
-
-        
-
